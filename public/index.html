@@ -221,13 +221,13 @@
     padding: 16px; margin-bottom: 20px;
   }
 
+  /* ── CLINIC CARD ── */
   .clinic-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 18px; margin-bottom: 10px;
     transition: border-color 0.2s;
-    text-decoration: none; display: block; color: inherit;
   }
   .clinic-card:hover { border-color: rgba(37,99,235,0.4); }
   .clinic-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
@@ -247,21 +247,49 @@
     font-size: 13px; font-weight: 700; color: var(--blue);
     flex-shrink: 0;
   }
-  .clinic-detail { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: flex; gap: 7px; }
+  .clinic-detail {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 6px; display: flex; gap: 7px; align-items: center;
+  }
+  .clinic-detail a { color: var(--muted2); text-decoration: none; }
+  .clinic-detail a:hover { color: var(--cyan); }
   .clinic-why {
     background: rgba(37,99,235,0.06);
     border-left: 2px solid var(--blue);
-    padding: 8px 12px;
     border-radius: 0 6px 6px 0;
+    padding: 8px 12px;
     font-size: 13px; color: var(--muted2);
     line-height: 1.5; margin-top: 10px;
   }
 
+  /* ── ACTION BUTTONS ── */
+  .clinic-actions {
+    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .btn-action {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1px solid;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    font-family: inherit;
+    background: none;
+  }
+  .btn-maps    { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--cyan); }
+  .btn-website { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted2); }
+  .btn-copy    { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted2); }
+  .btn-action:hover { opacity: 0.75; }
+
+  .copied-msg { font-size: 11px; color: var(--green); display: none; }
+  .copied-msg.show { display: inline; }
+
+  /* ── ADVICE & DOCTOR SCRIPT ── */
   .advice-box {
     background: rgba(6,182,212,0.06);
     border: 1px solid rgba(6,182,212,0.2);
     border-radius: var(--radius); padding: 16px;
-    margin-bottom: 12px;
+    margin-top: 16px; margin-bottom: 12px;
   }
   .advice-box .section-label { color: var(--cyan); margin-bottom: 8px; }
   .advice-box p { font-size: 14px; color: #CBD5E1; line-height: 1.6; }
@@ -274,6 +302,16 @@
   }
   .tell-doctor-box .section-label { margin-bottom: 8px; }
   .tell-doctor-box p { font-size: 14px; color: var(--muted2); line-height: 1.6; }
+
+  .btn-copy-script {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 7px 14px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04); color: var(--muted2);
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .btn-copy-script:hover { opacity: 0.75; }
 
   .btn-secondary {
     width: 100%; padding: 13px;
@@ -411,7 +449,6 @@ const citySelect = document.getElementById('citySelect');
 const symptomsInput = document.getElementById('symptomsInput');
 const analyzeBtn = document.getElementById('analyzeBtn');
 
-// Enable button when both fields are filled
 function checkInputs() {
   analyzeBtn.disabled = !citySelect.value || !symptomsInput.value.trim();
 }
@@ -438,6 +475,13 @@ function addThinkingStep(text, done = false) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+function copyText(text, msgId) {
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById(msgId);
+    if (el) { el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2000); }
+  });
+}
+
 async function runAgent() {
   const city = citySelect.value;
   const symptoms = symptomsInput.value.trim();
@@ -446,11 +490,10 @@ async function runAgent() {
   showPhase('thinking');
   document.getElementById('thinkingCity').textContent = `Търся специалисти в ${city}`;
 
-  // Animated pre-steps
   await sleep(400);
   addThinkingStep('Анализирам описаните симптоми...');
   await sleep(700);
-  addThinkingStep(`Определям подходящ специалист...`);
+  addThinkingStep('Определям подходящ специалист...');
   await sleep(700);
   addThinkingStep(`Търся реални заведения в ${city}...`);
 
@@ -464,7 +507,6 @@ async function runAgent() {
     if (!res.ok) throw new Error('Server error');
     const data = await res.json();
 
-    // Show AI thinking steps
     if (data.thinking) {
       for (const step of data.thinking) {
         await sleep(400);
@@ -484,7 +526,7 @@ async function runAgent() {
 
 function renderResult(data, city) {
   const urgencyMap = {
-    'спешно': { cls: 'urgent', label: '⚠️ СПЕШНО — обади се на 112 или иди в спешното', },
+    'спешно': { cls: 'urgent', label: '⚠️ СПЕШНО — обади се на 112 или иди в спешното' },
     'скоро':  { cls: 'soon',   label: '⏱ В рамките на 2-3 дни' },
     'планово':{ cls: 'plan',   label: '📅 Планово — запиши час' }
   };
@@ -505,7 +547,6 @@ function renderResult(data, city) {
     </div>
   `;
 
-  // Agent thinking recap
   if (data.thinking && data.thinking.length) {
     html += `<div class="section-label" style="margin-bottom:10px">Анализ на агента</div>
     <div class="thinking-recap">`;
@@ -518,28 +559,48 @@ function renderResult(data, city) {
     html += `</div>`;
   }
 
-  // Clinics
   if (data.recommendations && data.recommendations.length) {
     html += `<div class="section-label">Медицински заведения в ${city}</div>`;
     data.recommendations.forEach((rec, i) => {
-      const url = rec.url || '#';
-      html += `
-        <a class="clinic-card" href="${url}" target="_blank" rel="noopener">
-          <div class="clinic-header">
-            <div>
-              <div class="clinic-name">${rec.name}</div>
-              <div class="clinic-tags">
-                <span class="tag tag-type">${rec.type}</span>
-                ${rec.nhif ? '<span class="tag tag-nhif">НЗОК</span>' : ''}
-              </div>
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent((rec.maps_query || rec.name + ' ' + city))}`;
+      const copyAddrId = `copy-addr-${i}`;
+      const copyScriptId = `copy-script`;
+
+      html += `<div class="clinic-card">
+        <div class="clinic-header">
+          <div>
+            <div class="clinic-name">${rec.name}</div>
+            <div class="clinic-tags">
+              <span class="tag tag-type">${rec.type}</span>
+              ${rec.nhif ? '<span class="tag tag-nhif">НЗОК</span>' : ''}
             </div>
-            <div class="clinic-num">${i + 1}</div>
           </div>
-          ${rec.address ? `<div class="clinic-detail"><span>📍</span><span>${rec.address}</span></div>` : ''}
-          ${rec.phone ? `<div class="clinic-detail"><span>📞</span><span>${rec.phone}</span></div>` : ''}
-          <div class="clinic-why">${rec.why}</div>
-        </a>
-      `;
+          <div class="clinic-num">${i + 1}</div>
+        </div>`;
+
+      if (rec.address) {
+        html += `<div class="clinic-detail"><span>📍</span><span>${rec.address}</span></div>`;
+      }
+      if (rec.phone) {
+        html += `<div class="clinic-detail"><span>📞</span><a href="tel:${rec.phone}">${rec.phone}</a></div>`;
+      }
+
+      html += `<div class="clinic-why">${rec.why}</div>`;
+
+      html += `<div class="clinic-actions">
+        <a class="btn-action btn-maps" href="${mapsUrl}" target="_blank" rel="noopener">🗺 Отвори в Maps</a>`;
+
+      if (rec.url && rec.url !== '#') {
+        html += `<a class="btn-action btn-website" href="${rec.url}" target="_blank" rel="noopener">🌐 Уебсайт</a>`;
+      }
+
+      if (rec.address) {
+        html += `<button class="btn-action btn-copy" onclick="copyText('${rec.address.replace(/'/g,"\\'")}', '${copyAddrId}')">
+          📋 Копирай адрес<span class="copied-msg" id="${copyAddrId}"> ✓</span>
+        </button>`;
+      }
+
+      html += `</div></div>`;
     });
   } else {
     html += `<div class="thinking-recap" style="color:var(--muted);font-size:14px;text-align:center;padding:20px">
@@ -547,19 +608,20 @@ function renderResult(data, city) {
     </div>`;
   }
 
-  // Advice
   if (data.advice) {
-    html += `<div class="advice-box" style="margin-top:16px">
+    html += `<div class="advice-box">
       <div class="section-label">Съвет</div>
       <p>${data.advice}</p>
     </div>`;
   }
 
-  // What to tell doctor
   if (data.what_to_tell_doctor) {
     html += `<div class="tell-doctor-box">
       <div class="section-label">Какво да кажеш при записване</div>
-      <p>${data.what_to_tell_doctor}</p>
+      <p id="doctor-script">${data.what_to_tell_doctor}</p>
+      <button class="btn-copy-script" onclick="copyText(document.getElementById('doctor-script').innerText, 'copy-script')">
+        📋 Копирай скрипта<span class="copied-msg" id="copy-script"> ✓ Копирано</span>
+      </button>
     </div>`;
   }
 
