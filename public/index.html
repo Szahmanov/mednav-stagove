@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedNav — Медицински Навигатор | StaGove</title>
+<meta name="description" content="Автономен AI агент, който анализира симптомите ти и намира реален специалист в твоя град.">
+<meta name="theme-color" content="#0B1628">
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B1628;
+    --surface: #111f35;
+    --surface2: #162845;
+    --border: rgba(255,255,255,0.08);
+    --border-active: rgba(37,99,235,0.5);
+    --text: #F1F5F9;
+    --muted: #64748B;
+    --muted2: #94A3B8;
+    --blue: #2563EB;
+    --cyan: #06B6D4;
+    --green: #10B981;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+  .logo {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .logo-text h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo-text p { font-size: 10px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; }
+  .header-back {
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    display: none;
+  }
+  .header-back.visible { display: block; }
+
+  /* ── MAIN ── */
+  .main { max-width: 620px; margin: 0 auto; padding: 36px 20px 60px; }
+
+  /* ── INPUT PHASE ── */
+  .hero { text-align: center; margin-bottom: 40px; }
+  .hero h2 {
+    font-size: 30px; font-weight: 800;
+    letter-spacing: -0.8px; margin-bottom: 10px;
+    background: linear-gradient(135deg, #F1F5F9 30%, var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--muted); font-size: 14px; max-width: 400px; margin: 0 auto; }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 11px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.8px;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--border-active);
+  }
+  .field textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+  .field select option { background: #1a2a42; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border: none; border-radius: var(--radius);
+    color: #fff; font-size: 16px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    letter-spacing: -0.2px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled {
+    background: var(--surface2);
+    color: var(--muted); cursor: not-allowed;
+  }
+
+  .disclaimer {
+    text-align: center; color: var(--muted);
+    font-size: 12px; margin-top: 14px;
+  }
+  .disclaimer a { color: var(--muted2); }
+
+  /* ── THINKING PHASE ── */
+  .thinking-wrap { text-align: center; padding: 20px 0 32px; }
+  .thinking-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 18px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .thinking-wrap h3 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .thinking-wrap p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .thinking-log {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: left;
+  }
+  .thinking-step {
+    display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 10px; animation: fadeUp 0.4s ease;
+  }
+  .thinking-step:last-child { margin-bottom: 0; }
+  .step-icon { color: var(--cyan); font-size: 13px; margin-top: 2px; flex-shrink: 0; }
+  .step-text { color: var(--muted2); font-size: 13px; line-height: 1.5; }
+
+  .dots { display: flex; gap: 5px; padding-top: 12px; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--blue);
+  }
+  .dot:nth-child(1) { animation: bounce 1s ease-in-out 0s infinite; }
+  .dot:nth-child(2) { animation: bounce 1s ease-in-out 0.2s infinite; }
+  .dot:nth-child(3) { animation: bounce 1s ease-in-out 0.4s infinite; }
+
+  /* ── RESULT PHASE ── */
+  .urgency-banner {
+    display: flex; align-items: center; gap: 12px;
+    border-radius: var(--radius); padding: 13px 16px;
+    margin-bottom: 18px;
+    border: 1px solid;
+  }
+  .urgency-banner.urgent { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+  .urgency-banner.soon   { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); }
+  .urgency-banner.plan   { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); }
+  .urgency-label { font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .urgency-banner.urgent .urgency-label { color: var(--red); }
+  .urgency-banner.soon   .urgency-label { color: var(--amber); }
+  .urgency-banner.plan   .urgency-label { color: var(--green); }
+  .urgency-reason { font-size: 13px; color: var(--muted2); }
+
+  .specialist-card {
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(37,99,235,0.08);
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: var(--radius); padding: 18px;
+    margin-bottom: 20px;
+  }
+  .specialist-icon {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .specialist-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .specialist-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+
+  .section-label {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.7px;
+    margin-bottom: 10px;
+  }
+
+  .thinking-recap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px; margin-bottom: 20px;
+  }
+
+  .clinic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px; margin-bottom: 10px;
+    transition: border-color 0.2s;
+    text-decoration: none; display: block; color: inherit;
+  }
+  .clinic-card:hover { border-color: rgba(37,99,235,0.4); }
+  .clinic-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .clinic-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .clinic-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; letter-spacing: 0.3px;
+  }
+  .tag-type { background: rgba(6,182,212,0.12); color: var(--cyan); }
+  .tag-nhif { background: rgba(16,185,129,0.12); color: var(--green); }
+  .clinic-num {
+    width: 26px; height: 26px;
+    background: rgba(37,99,235,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--blue);
+    flex-shrink: 0;
+  }
+  .clinic-detail { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: flex; gap: 7px; }
+  .clinic-why {
+    background: rgba(37,99,235,0.06);
+    border-left: 2px solid var(--blue);
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px; color: var(--muted2);
+    line-height: 1.5; margin-top: 10px;
+  }
+
+  .advice-box {
+    background: rgba(6,182,212,0.06);
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: var(--radius); padding: 16px;
+    margin-bottom: 12px;
+  }
+  .advice-box .section-label { color: var(--cyan); margin-bottom: 8px; }
+  .advice-box p { font-size: 14px; color: #CBD5E1; line-height: 1.6; }
+
+  .tell-doctor-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+    margin-bottom: 24px;
+  }
+  .tell-doctor-box .section-label { margin-bottom: 8px; }
+  .tell-doctor-box p { font-size: 14px; color: var(--muted2); line-height: 1.6; }
+
+  .btn-secondary {
+    width: 100%; padding: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted2); font-size: 14px;
+    font-family: inherit; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); }
+
+  /* ── ERROR ── */
+  .error-wrap { text-align: center; padding: 50px 0; }
+  .error-wrap p { color: var(--red); margin-bottom: 20px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+  /* ── PHASE VISIBILITY ── */
+  .phase { display: none; }
+  .phase.active { display: block; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 480px) {
+    .hero h2 { font-size: 24px; }
+    .main { padding: 24px 16px 50px; }
+    .header { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">⚕</div>
+  <div class="logo-text">
+    <h1>MedNav</h1>
+    <p>by StaGove · Автономен медицински агент</p>
+  </div>
+  <button class="header-back" id="backBtn" onclick="reset()">← Ново търсене</button>
+</header>
+
+<main class="main">
+
+  <!-- INPUT PHASE -->
+  <div class="phase active" id="phase-input">
+    <div class="hero">
+      <h2>Намери правилния лекар</h2>
+      <p>Опиши симптомите си. Агентът анализира, търси в реално време и ти дава конкретно заведение в твоя град.</p>
+    </div>
+
+    <div class="field">
+      <label>Избери град</label>
+      <select id="citySelect">
+        <option value="">— Избери —</option>
+        <option>София</option>
+        <option>Пловдив</option>
+        <option>Варна</option>
+        <option>Бургас</option>
+        <option>Русе</option>
+        <option>Стара Загора</option>
+        <option>Плевен</option>
+        <option>Велико Търново</option>
+        <option>Сливен</option>
+        <option>Добрич</option>
+        <option>Шумен</option>
+        <option>Перник</option>
+        <option>Хасково</option>
+        <option>Ямбол</option>
+        <option>Пазарджик</option>
+        <option>Благоевград</option>
+        <option>Враца</option>
+        <option>Габрово</option>
+        <option>Асеновград</option>
+        <option>Видин</option>
+        <option>Монтана</option>
+        <option>Казанлък</option>
+        <option>Кюстендил</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Опиши симптомите си</label>
+      <textarea id="symptomsInput"
+        placeholder="напр. от три дни имам силно главоболие, виене на свят и ми е трудно да се концентрирам..."></textarea>
+    </div>
+
+    <button class="btn-primary" id="analyzeBtn" onclick="runAgent()" disabled>
+      Анализирай и намери лекар →
+    </button>
+
+    <p class="disclaimer">
+      MedNav предоставя информация, не медицинска диагноза.<br>
+      При спешност се обади на <strong>112</strong>.
+    </p>
+  </div>
+
+  <!-- THINKING PHASE -->
+  <div class="phase" id="phase-thinking">
+    <div class="thinking-wrap">
+      <div class="thinking-icon">⚕</div>
+      <h3>Агентът анализира...</h3>
+      <p id="thinkingCity">Търся специалисти в избрания град</p>
+    </div>
+    <div class="thinking-log" id="thinkingLog">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT PHASE -->
+  <div class="phase" id="phase-result">
+    <div id="resultContent"></div>
+    <button class="btn-secondary" onclick="reset()">← Ново търсене</button>
+  </div>
+
+  <!-- ERROR PHASE -->
+  <div class="phase" id="phase-error">
+    <div class="error-wrap">
+      <div style="font-size:40px;margin-bottom:16px">⚠️</div>
+      <p id="errorMsg">Агентът срещна проблем.</p>
+      <button class="btn-secondary" onclick="reset()">Опитай отново</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const citySelect = document.getElementById('citySelect');
+const symptomsInput = document.getElementById('symptomsInput');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+// Enable button when both fields are filled
+function checkInputs() {
+  analyzeBtn.disabled = !citySelect.value || !symptomsInput.value.trim();
+}
+citySelect.addEventListener('change', checkInputs);
+symptomsInput.addEventListener('input', checkInputs);
+
+function showPhase(name) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  document.getElementById('phase-' + name).classList.add('active');
+  document.getElementById('backBtn').classList.toggle('visible', name !== 'input');
+}
+
+function addThinkingStep(text, done = false) {
+  const log = document.getElementById('thinkingLog');
+  const dots = log.querySelector('.dots');
+  const step = document.createElement('div');
+  step.className = 'thinking-step';
+  step.innerHTML = `
+    <span class="step-icon">${done ? '✓' : '›'}</span>
+    <span class="step-text">${text}</span>
+  `;
+  log.insertBefore(step, dots);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runAgent() {
+  const city = citySelect.value;
+  const symptoms = symptomsInput.value.trim();
+  if (!city || !symptoms) return;
+
+  showPhase('thinking');
+  document.getElementById('thinkingCity').textContent = `Търся специалисти в ${city}`;
+
+  // Animated pre-steps
+  await sleep(400);
+  addThinkingStep('Анализирам описаните симптоми...');
+  await sleep(700);
+  addThinkingStep(`Определям подходящ специалист...`);
+  await sleep(700);
+  addThinkingStep(`Търся реални заведения в ${city}...`);
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symptoms, city })
+    });
+
+    if (!res.ok) throw new Error('Server error');
+    const data = await res.json();
+
+    // Show AI thinking steps
+    if (data.thinking) {
+      for (const step of data.thinking) {
+        await sleep(400);
+        addThinkingStep(step, true);
+      }
+    }
+
+    await sleep(500);
+    renderResult(data, city);
+    showPhase('result');
+
+  } catch (err) {
+    document.getElementById('errorMsg').textContent = 'Агентът срещна проблем. Провери връзката и опитай отново.';
+    showPhase('error');
+  }
+}
+
+function renderResult(data, city) {
+  const urgencyMap = {
+    'спешно': { cls: 'urgent', label: '⚠️ СПЕШНО — обади се на 112 или иди в спешното', },
+    'скоро':  { cls: 'soon',   label: '⏱ В рамките на 2-3 дни' },
+    'планово':{ cls: 'plan',   label: '📅 Планово — запиши час' }
+  };
+  const urg = urgencyMap[data.urgency] || urgencyMap['планово'];
+
+  let html = `
+    <div class="urgency-banner ${urg.cls}">
+      <span class="urgency-label">${urg.label}</span>
+      <span class="urgency-reason">${data.urgency_reason || ''}</span>
+    </div>
+
+    <div class="specialist-card">
+      <div class="specialist-icon">🩺</div>
+      <div>
+        <div class="specialist-label">Препоръчан специалист</div>
+        <div class="specialist-name">${data.specialist}</div>
+      </div>
+    </div>
+  `;
+
+  // Agent thinking recap
+  if (data.thinking && data.thinking.length) {
+    html += `<div class="section-label" style="margin-bottom:10px">Анализ на агента</div>
+    <div class="thinking-recap">`;
+    data.thinking.forEach(step => {
+      html += `<div class="thinking-step">
+        <span class="step-icon">✓</span>
+        <span class="step-text">${step}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Clinics
+  if (data.recommendations && data.recommendations.length) {
+    html += `<div class="section-label">Медицински заведения в ${city}</div>`;
+    data.recommendations.forEach((rec, i) => {
+      const url = rec.url || '#';
+      html += `
+        <a class="clinic-card" href="${url}" target="_blank" rel="noopener">
+          <div class="clinic-header">
+            <div>
+              <div class="clinic-name">${rec.name}</div>
+              <div class="clinic-tags">
+                <span class="tag tag-type">${rec.type}</span>
+                ${rec.nhif ? '<span class="tag tag-nhif">НЗОК</span>' : ''}
+              </div>
+            </div>
+            <div class="clinic-num">${i + 1}</div>
+          </div>
+          ${rec.address ? `<div class="clinic-detail"><span>📍</span><span>${rec.address}</span></div>` : ''}
+          ${rec.phone ? `<div class="clinic-detail"><span>📞</span><span>${rec.phone}</span></div>` : ''}
+          <div class="clinic-why">${rec.why}</div>
+        </a>
+      `;
+    });
+  } else {
+    html += `<div class="thinking-recap" style="color:var(--muted);font-size:14px;text-align:center;padding:20px">
+      Не намерих конкретни заведения в ${city}. Опитай с по-голям град наблизо.
+    </div>`;
+  }
+
+  // Advice
+  if (data.advice) {
+    html += `<div class="advice-box" style="margin-top:16px">
+      <div class="section-label">Съвет</div>
+      <p>${data.advice}</p>
+    </div>`;
+  }
+
+  // What to tell doctor
+  if (data.what_to_tell_doctor) {
+    html += `<div class="tell-doctor-box">
+      <div class="section-label">Какво да кажеш при записване</div>
+      <p>${data.what_to_tell_doctor}</p>
+    </div>`;
+  }
+
+  html += `<p style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:16px">
+    MedNav предоставя информация, не медицинска диагноза. При спешност — 112.
+  </p>`;
+
+  document.getElementById('resultContent').innerHTML = html;
+}
+
+function reset() {
+  showPhase('input');
+  document.getElementById('thinkingLog').innerHTML = `<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  document.getElementById('resultContent').innerHTML = '';
+}
+</script>
+
+</body>
+</html>
