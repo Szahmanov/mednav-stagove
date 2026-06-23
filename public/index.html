@@ -4,235 +4,263 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedNav — Автономен Медицински Агент | StaGove</title>
-<meta name="description" content="Автономен AI агент, който планира, търси, оценява и създава персонален медицински план за теб.">
+<meta name="description" content="Автономен AI агент: планира, търси, оценява собствената си работа и подобрява резултатите без намеса.">
 <meta name="theme-color" content="#0B1628">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0B1628; --surface: #111f35; --surface2: #162845;
-    --border: rgba(255,255,255,0.08); --border-active: rgba(37,99,235,0.5);
-    --text: #F1F5F9; --muted: #64748B; --muted2: #94A3B8;
-    --blue: #2563EB; --cyan: #06B6D4; --green: #10B981;
-    --amber: #F59E0B; --red: #EF4444; --purple: #8B5CF6;
-    --radius: 12px;
-  }
-  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B1628;--surface:#111f35;--surface2:#162845;
+  --border:rgba(255,255,255,0.08);--border-active:rgba(37,99,235,0.5);
+  --text:#F1F5F9;--muted:#64748B;--muted2:#94A3B8;
+  --blue:#2563EB;--cyan:#06B6D4;--green:#10B981;
+  --amber:#F59E0B;--red:#EF4444;--purple:#8B5CF6;
+  --radius:12px;
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
 
-  /* ── HEADER ── */
-  .header { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.015); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px); }
-  .logo { width: 38px; height: 38px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .logo-text h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-  .logo-text p { font-size: 10px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; }
-  .header-back { margin-left: auto; background: var(--surface); border: 1px solid var(--border); color: var(--muted2); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; display: none; }
-  .header-back.visible { display: block; }
+/* HEADER */
+.header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.015);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo-text h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.logo-text p{font-size:10px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+.header-back{margin-left:auto;background:var(--surface);border:1px solid var(--border);color:var(--muted2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;display:none}
+.header-back.visible{display:block}
 
-  /* ── MAIN ── */
-  .main { max-width: 660px; margin: 0 auto; padding: 36px 20px 60px; }
+/* MAIN */
+.main{max-width:680px;margin:0 auto;padding:36px 20px 60px}
 
-  /* ── INPUT ── */
-  .hero { text-align: center; margin-bottom: 40px; }
-  .hero h2 { font-size: 30px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 10px; background: linear-gradient(135deg, #F1F5F9 30%, var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero p { color: var(--muted); font-size: 14px; max-width: 420px; margin: 0 auto; }
-  .hero-badges { display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-  .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; }
-  .badge-blue { background: rgba(37,99,235,0.15); color: #60A5FA; }
-  .badge-cyan { background: rgba(6,182,212,0.12); color: var(--cyan); }
-  .badge-green { background: rgba(16,185,129,0.12); color: var(--green); }
+/* INPUT */
+.hero{text-align:center;margin-bottom:40px}
+.hero h2{font-size:30px;font-weight:800;letter-spacing:-.8px;margin-bottom:10px;background:linear-gradient(135deg,#F1F5F9 30%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:14px;max-width:420px;margin:0 auto}
+.hero-badges{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.3px}
+.badge-blue{background:rgba(37,99,235,.15);color:#60A5FA}
+.badge-cyan{background:rgba(6,182,212,.12);color:var(--cyan)}
+.badge-green{background:rgba(16,185,129,.12);color:var(--green)}
+.badge-purple{background:rgba(139,92,246,.12);color:var(--purple)}
 
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 8px; }
-  .field input, .field textarea, .field select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 16px; color: var(--text); font-size: 15px; font-family: inherit; outline: none; transition: border-color 0.2s; }
-  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--border-active); }
-  .field textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
-  .field select option { background: #1a2a42; }
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.field input,.field textarea,.field select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--border-active)}
+.field textarea{resize:vertical;min-height:110px;line-height:1.6}
+.field select option{background:#1a2a42}
+.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,var(--blue),var(--cyan));border:none;border-radius:var(--radius);color:#fff;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:-.2px;transition:opacity .2s,transform .1s}
+.btn-primary:hover{opacity:.9}
+.btn-primary:active{transform:scale(.99)}
+.btn-primary:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+.disclaimer{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
 
-  .btn-primary { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border: none; border-radius: var(--radius); color: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; letter-spacing: -0.2px; transition: opacity 0.2s, transform 0.1s; }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.99); }
-  .btn-primary:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
-  .disclaimer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 14px; }
+/* THINKING */
+.thinking-wrap{text-align:center;padding:20px 0 28px}
+.thinking-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;animation:pulse 1.8s ease-in-out infinite}
+.thinking-wrap h3{font-size:19px;font-weight:700;margin-bottom:6px}
+.thinking-wrap p{color:var(--muted);font-size:14px;margin-bottom:20px}
+.thinking-log{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:left}
+.thinking-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;animation:fadeUp .4s ease}
+.thinking-step:last-child{margin-bottom:0}
+.step-icon{font-size:13px;margin-top:2px;flex-shrink:0}
+.step-icon.done{color:var(--cyan)}
+.step-icon.pending{color:var(--muted)}
+.step-text{color:var(--muted2);font-size:13px;line-height:1.5}
+.step-phase{font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--blue);text-transform:uppercase;margin-bottom:4px;margin-top:14px}
+.dots{display:flex;gap:5px;padding-top:12px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.dot:nth-child(1){animation:bounce 1s ease-in-out 0s infinite}
+.dot:nth-child(2){animation:bounce 1s ease-in-out .2s infinite}
+.dot:nth-child(3){animation:bounce 1s ease-in-out .4s infinite}
 
-  /* ── THINKING ── */
-  .thinking-wrap { text-align: center; padding: 20px 0 28px; }
-  .thinking-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 18px; animation: pulse 1.8s ease-in-out infinite; }
-  .thinking-wrap h3 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
-  .thinking-wrap p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
-  .thinking-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: left; }
-  .thinking-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; animation: fadeUp 0.4s ease; }
-  .thinking-step:last-child { margin-bottom: 0; }
-  .step-icon { font-size: 13px; margin-top: 2px; flex-shrink: 0; }
-  .step-icon.done { color: var(--cyan); }
-  .step-icon.pending { color: var(--muted); }
-  .step-text { color: var(--muted2); font-size: 13px; line-height: 1.5; }
-  .step-phase { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; color: var(--blue); text-transform: uppercase; margin-bottom: 4px; margin-top: 14px; }
-  .dots { display: flex; gap: 5px; padding-top: 12px; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
-  .dot:nth-child(1) { animation: bounce 1s ease-in-out 0s infinite; }
-  .dot:nth-child(2) { animation: bounce 1s ease-in-out 0.2s infinite; }
-  .dot:nth-child(3) { animation: bounce 1s ease-in-out 0.4s infinite; }
+/* SECTION BLOCKS */
+.section-block{margin-bottom:20px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.section-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.icon-blue{background:rgba(37,99,235,.15)}
+.icon-cyan{background:rgba(6,182,212,.12)}
+.icon-green{background:rgba(16,185,129,.12)}
+.icon-amber{background:rgba(245,158,11,.12)}
+.icon-purple{background:rgba(139,92,246,.12)}
+.icon-red{background:rgba(239,68,68,.12)}
+.section-title{font-size:13px;font-weight:700;letter-spacing:-.2px}
+.section-sub{font-size:11px;color:var(--muted)}
 
-  /* ── RESULT SECTIONS ── */
-  .section-block { margin-bottom: 20px; }
-  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .icon-blue { background: rgba(37,99,235,0.15); }
-  .icon-cyan { background: rgba(6,182,212,0.12); }
-  .icon-green { background: rgba(16,185,129,0.12); }
-  .icon-amber { background: rgba(245,158,11,0.12); }
-  .icon-purple { background: rgba(139,92,246,0.12); }
-  .icon-red { background: rgba(239,68,68,0.12); }
-  .section-title { font-size: 13px; font-weight: 700; letter-spacing: -0.2px; }
-  .section-sub { font-size: 11px; color: var(--muted); }
+/* URGENCY */
+.urgency-banner{display:flex;align-items:center;gap:12px;border-radius:var(--radius);padding:13px 16px;margin-bottom:18px;border:1px solid}
+.urgency-banner.urgent{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
+.urgency-banner.soon{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3)}
+.urgency-banner.plan{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.3)}
+.urgency-label{font-weight:700;font-size:14px;white-space:nowrap}
+.urgency-banner.urgent .urgency-label{color:var(--red)}
+.urgency-banner.soon .urgency-label{color:var(--amber)}
+.urgency-banner.plan .urgency-label{color:var(--green)}
+.urgency-reason{font-size:13px;color:var(--muted2)}
 
-  /* ── URGENCY ── */
-  .urgency-banner { display: flex; align-items: center; gap: 12px; border-radius: var(--radius); padding: 13px 16px; margin-bottom: 18px; border: 1px solid; }
-  .urgency-banner.urgent { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
-  .urgency-banner.soon   { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); }
-  .urgency-banner.plan   { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); }
-  .urgency-label { font-weight: 700; font-size: 14px; white-space: nowrap; }
-  .urgency-banner.urgent .urgency-label { color: var(--red); }
-  .urgency-banner.soon   .urgency-label { color: var(--amber); }
-  .urgency-banner.plan   .urgency-label { color: var(--green); }
-  .urgency-reason { font-size: 13px; color: var(--muted2); }
+/* SPECIALIST */
+.specialist-card{display:flex;align-items:center;gap:16px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.25);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+.specialist-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.specialist-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.specialist-name{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.goal-text{font-size:13px;color:var(--muted2);margin-top:4px;font-style:italic}
 
-  /* ── SPECIALIST ── */
-  .specialist-card { display: flex; align-items: center; gap: 16px; background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.25); border-radius: var(--radius); padding: 18px; margin-bottom: 20px; }
-  .specialist-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-  .specialist-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-  .specialist-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .goal-text { font-size: 13px; color: var(--muted2); margin-top: 4px; font-style: italic; }
+/* PLAN STEPS */
+.plan-steps{display:flex;flex-direction:column;gap:0}
+.plan-step{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.plan-step:last-child{border-bottom:none}
+.plan-step-num{width:24px;height:24px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px}
+.plan-step-text{font-size:14px;color:var(--muted2);line-height:1.5}
 
-  /* ── PLAN STEPS ── */
-  .plan-steps { display: flex; flex-direction: column; gap: 0; }
-  .plan-step { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .plan-step:last-child { border-bottom: none; }
-  .plan-step-num { width: 24px; height: 24px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 2px; }
-  .plan-step-text { font-size: 14px; color: var(--muted2); line-height: 1.5; }
+/* THINKING RECAP */
+.thinking-recap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.recap-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.recap-step:last-child{margin-bottom:0}
 
-  /* ── THINKING RECAP ── */
-  .thinking-recap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-  .recap-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
-  .recap-step:last-child { margin-bottom: 0; }
+/* CLINIC CARDS */
+.clinic-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:10px;transition:border-color .2s}
+.clinic-card:hover{border-color:rgba(37,99,235,.4)}
+.clinic-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.clinic-name{font-weight:700;font-size:15px;margin-bottom:6px}
+.clinic-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;letter-spacing:.3px}
+.tag-type{background:rgba(6,182,212,.12);color:var(--cyan)}
+.tag-nhif{background:rgba(16,185,129,.12);color:var(--green)}
+.score-badge{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.score-num{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+.score-high{background:rgba(16,185,129,.15);color:var(--green)}
+.score-mid{background:rgba(245,158,11,.15);color:var(--amber)}
+.score-low{background:rgba(239,68,68,.12);color:var(--red)}
+.score-label{font-size:9px;color:var(--muted);letter-spacing:.4px;margin-top:2px}
+.score-bars{display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.score-bar-row{display:flex;align-items:center;gap:8px}
+.score-bar-label{font-size:11px;color:var(--muted);width:120px;flex-shrink:0}
+.score-bar-track{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.score-bar-val{font-size:11px;color:var(--muted2);width:28px;text-align:right}
+.clinic-detail{font-size:13px;color:var(--muted);margin-bottom:6px;display:flex;gap:7px;align-items:center}
+.clinic-detail a{color:var(--muted2);text-decoration:none}
+.clinic-detail a:hover{color:var(--cyan)}
+.clinic-why{background:rgba(37,99,235,.06);border-left:2px solid var(--blue);border-radius:0 6px 6px 0;padding:8px 12px;font-size:13px;color:var(--muted2);line-height:1.5;margin-top:10px}
+.clinic-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;text-decoration:none;transition:opacity .2s;font-family:inherit;background:none}
+.btn-maps{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--cyan)}
+.btn-website{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--muted2)}
+.btn-copy{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--muted2)}
+.btn-action:hover{opacity:.75}
+.copied-msg{font-size:11px;color:var(--green);display:none}
+.copied-msg.show{display:inline}
+.ranking-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:14px 16px;margin-top:4px}
+.ranking-box p{font-size:13px;color:var(--muted2);line-height:1.6}
 
-  /* ── CLINIC CARDS ── */
-  .clinic-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 10px; transition: border-color 0.2s; }
-  .clinic-card:hover { border-color: rgba(37,99,235,0.4); }
-  .clinic-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-  .clinic-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
-  .clinic-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.3px; }
-  .tag-type { background: rgba(6,182,212,0.12); color: var(--cyan); }
-  .tag-nhif { background: rgba(16,185,129,0.12); color: var(--green); }
+/* SELF-EVALUATION */
+.self-eval-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.self-eval-top{display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap}
+.confidence-circle{position:relative;width:72px;height:72px;flex-shrink:0}
+.confidence-circle svg{transform:rotate(-90deg)}
+.confidence-circle .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:17px;font-weight:800}
+.confidence-info{flex:1}
+.risk-pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px;margin-bottom:8px}
+.risk-low{background:rgba(16,185,129,.12);color:var(--green)}
+.risk-medium{background:rgba(245,158,11,.12);color:var(--amber)}
+.risk-high{background:rgba(239,68,68,.12);color:var(--red)}
+.why-not-100{font-size:13px;color:var(--muted2);line-height:1.5;font-style:italic}
+.eval-lists{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.eval-lists{grid-template-columns:1fr}}
+.eval-list-block{background:var(--surface2);border-radius:8px;padding:12px}
+.eval-list-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.eval-list-title.amber{color:var(--amber)}
+.eval-list-title.red{color:var(--red)}
+.eval-list-item{font-size:12px;color:var(--muted2);margin-bottom:4px;display:flex;gap:6px}
+.eval-list-item:last-child{margin-bottom:0}
 
-  /* Score badge */
-  .score-badge { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-  .score-num { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; }
-  .score-high { background: rgba(16,185,129,0.15); color: var(--green); }
-  .score-mid  { background: rgba(245,158,11,0.15); color: var(--amber); }
-  .score-low  { background: rgba(239,68,68,0.12); color: var(--red); }
-  .score-label { font-size: 9px; color: var(--muted); letter-spacing: 0.4px; margin-top: 2px; }
+/* REFINEMENT */
+.refinement-box{border-radius:var(--radius);padding:16px;border:1px solid}
+.refinement-box.performed{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.2)}
+.refinement-box.skipped{background:rgba(37,99,235,.05);border-color:rgba(37,99,235,.15)}
+.refinement-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.refinement-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.refinement-box.performed .refinement-label{color:var(--green)}
+.refinement-box.skipped .refinement-label{color:var(--blue)}
+.score-flow{display:flex;align-items:center;gap:8px;font-size:13px}
+.score-pill{font-weight:700;padding:3px 10px;border-radius:6px;font-size:13px}
+.score-pill.before{background:rgba(245,158,11,.12);color:var(--amber)}
+.score-pill.after{background:rgba(16,185,129,.15);color:var(--green)}
+.improvement-badge{font-size:12px;font-weight:700;color:var(--green)}
+.refinement-decision{font-size:13px;color:var(--muted2);line-height:1.5;margin-top:8px}
 
-  /* Score bars */
-  .score-bars { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; }
-  .score-bar-row { display: flex; align-items: center; gap: 8px; }
-  .score-bar-label { font-size: 11px; color: var(--muted); width: 120px; flex-shrink: 0; }
-  .score-bar-track { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
-  .score-bar-val { font-size: 11px; color: var(--muted2); width: 28px; text-align: right; }
+/* DECISION REPORT */
+.decision-report{background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(6,182,212,.06));border:1px solid rgba(37,99,235,.2);border-radius:var(--radius);padding:18px}
+.decision-item{margin-bottom:14px}
+.decision-item:last-child{margin-bottom:0}
+.decision-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--cyan);margin-bottom:6px}
+.decision-text{font-size:13px;color:var(--muted2);line-height:1.5}
+.decision-list-item{display:flex;gap:8px;font-size:13px;color:var(--muted2);margin-bottom:4px}
 
-  .clinic-detail { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: flex; gap: 7px; align-items: center; }
-  .clinic-detail a { color: var(--muted2); text-decoration: none; }
-  .clinic-detail a:hover { color: var(--cyan); }
-  .clinic-why { background: rgba(37,99,235,0.06); border-left: 2px solid var(--blue); border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 13px; color: var(--muted2); line-height: 1.5; margin-top: 10px; }
-  .clinic-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .btn-action { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid; text-decoration: none; transition: opacity 0.2s; font-family: inherit; background: none; }
-  .btn-maps    { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--cyan); }
-  .btn-website { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted2); }
-  .btn-copy    { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted2); }
-  .btn-action:hover { opacity: 0.75; }
-  .copied-msg { font-size: 11px; color: var(--green); display: none; }
-  .copied-msg.show { display: inline; }
+/* CARE PLAN */
+.care-timeline{display:flex;flex-direction:column;gap:0}
+.care-day{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.care-day:last-child{border-bottom:none}
+.care-day-label{width:80px;flex-shrink:0}
+.care-day-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;text-align:center;display:inline-block}
+.tag-today{background:rgba(37,99,235,.2);color:#60A5FA}
+.tag-tomorrow{background:rgba(6,182,212,.15);color:var(--cyan)}
+.tag-days34{background:rgba(16,185,129,.12);color:var(--green)}
+.tag-days57{background:rgba(245,158,11,.12);color:var(--amber)}
+.care-day-text{font-size:14px;color:var(--muted2);line-height:1.5}
+.monitor-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.monitor-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted2)}
+.monitor-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);margin-top:6px;flex-shrink:0}
+.escalate-list{display:flex;flex-direction:column;gap:6px}
+.escalate-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#FCA5A5}
+.escalate-dot{width:6px;height:6px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0}
 
-  /* Ranking reasoning */
-  .ranking-box { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.2); border-radius: var(--radius); padding: 14px 16px; margin-top: 4px; }
-  .ranking-box p { font-size: 13px; color: var(--muted2); line-height: 1.6; }
+/* DOCTOR PACK */
+.doctor-pack-grid{display:flex;flex-direction:column;gap:12px}
+.pack-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.pack-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px}
+.pack-text{font-size:14px;color:var(--muted2);line-height:1.6}
+.pack-list{display:flex;flex-direction:column;gap:6px}
+.pack-list-item{display:flex;gap:8px;font-size:13px;color:var(--muted2)}
+.pack-list-bullet{color:var(--cyan);flex-shrink:0}
+.script-box{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:8px;padding:12px 14px;font-size:14px;color:#CBD5E1;line-height:1.6;font-style:italic}
+.btn-copy-script{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted2);font-family:inherit;transition:opacity .2s}
+.btn-copy-script:hover{opacity:.75}
 
-  /* ── CARE PLAN ── */
-  .care-timeline { display: flex; flex-direction: column; gap: 0; }
-  .care-day { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-  .care-day:last-child { border-bottom: none; }
-  .care-day-label { width: 80px; flex-shrink: 0; }
-  .care-day-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-align: center; display: inline-block; }
-  .tag-today    { background: rgba(37,99,235,0.2); color: #60A5FA; }
-  .tag-tomorrow { background: rgba(6,182,212,0.15); color: var(--cyan); }
-  .tag-days34   { background: rgba(16,185,129,0.12); color: var(--green); }
-  .tag-days57   { background: rgba(245,158,11,0.12); color: var(--amber); }
-  .care-day-text { font-size: 14px; color: var(--muted2); line-height: 1.5; }
+/* AUTONOMY */
+.autonomy-box{background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(6,182,212,.06));border:1px solid rgba(37,99,235,.2);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.autonomy-title{font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.autonomy-items{display:flex;flex-direction:column;gap:10px}
+.autonomy-item{display:flex;gap:12px;align-items:flex-start}
+.autonomy-check{width:20px;height:20px;background:rgba(16,185,129,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.autonomy-text strong{font-size:13px;color:var(--text);display:block;margin-bottom:2px}
+.autonomy-text span{font-size:12px;color:var(--muted2)}
 
-  .monitor-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-  .monitor-item { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted2); }
-  .monitor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-top: 6px; flex-shrink: 0; }
+/* RED FLAGS */
+.red-flags-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px}
+.red-flags-title{font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.red-flag-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#FCA5A5;margin-bottom:6px}
+.red-flag-item:last-child{margin-bottom:0}
 
-  .escalate-list { display: flex; flex-direction: column; gap: 6px; }
-  .escalate-item { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #FCA5A5; }
-  .escalate-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-top: 6px; flex-shrink: 0; }
+.btn-secondary{width:100%;padding:13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--muted2);font-size:14px;font-family:inherit;cursor:pointer;transition:border-color .2s}
+.btn-secondary:hover{border-color:rgba(255,255,255,.2)}
+.error-wrap{text-align:center;padding:50px 0}
+.error-wrap p{color:var(--red);margin-bottom:20px}
+.divider{height:1px;background:var(--border);margin:24px 0}
 
-  /* ── DOCTOR PACK ── */
-  .doctor-pack-grid { display: flex; flex-direction: column; gap: 12px; }
-  .pack-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
-  .pack-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); margin-bottom: 8px; }
-  .pack-text { font-size: 14px; color: var(--muted2); line-height: 1.6; }
-  .pack-list { display: flex; flex-direction: column; gap: 6px; }
-  .pack-list-item { display: flex; gap: 8px; font-size: 13px; color: var(--muted2); }
-  .pack-list-bullet { color: var(--cyan); flex-shrink: 0; }
-  .script-box { background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.2); border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #CBD5E1; line-height: 1.6; font-style: italic; }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
-  .btn-copy-script { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--muted2); font-family: inherit; transition: opacity 0.2s; }
-  .btn-copy-script:hover { opacity: 0.75; }
+.phase{display:none}
+.phase.active{display:block}
 
-  /* ── AUTONOMY SECTION ── */
-  .autonomy-box { background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(6,182,212,0.06)); border: 1px solid rgba(37,99,235,0.2); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-  .autonomy-title { font-size: 13px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; }
-  .autonomy-items { display: flex; flex-direction: column; gap: 10px; }
-  .autonomy-item { display: flex; gap: 12px; align-items: flex-start; }
-  .autonomy-check { width: 20px; height: 20px; background: rgba(16,185,129,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
-  .autonomy-text strong { font-size: 13px; color: var(--text); display: block; margin-bottom: 2px; }
-  .autonomy-text span { font-size: 12px; color: var(--muted2); }
-
-  /* ── RED FLAGS ── */
-  .red-flags-box { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; }
-  .red-flags-title { font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
-  .red-flag-item { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #FCA5A5; margin-bottom: 6px; }
-  .red-flag-item:last-child { margin-bottom: 0; }
-
-  /* ── BUTTONS ── */
-  .btn-secondary { width: 100%; padding: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted2); font-size: 14px; font-family: inherit; cursor: pointer; transition: border-color 0.2s; }
-  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); }
-
-  /* ── ERROR ── */
-  .error-wrap { text-align: center; padding: 50px 0; }
-  .error-wrap p { color: var(--red); margin-bottom: 20px; }
-
-  /* ── DIVIDER ── */
-  .divider { height: 1px; background: var(--border); margin: 24px 0; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-
-  .phase { display: none; }
-  .phase.active { display: block; }
-
-  @media (max-width: 480px) {
-    .hero h2 { font-size: 24px; }
-    .main { padding: 24px 16px 50px; }
-    .header { padding: 14px 16px; }
-    .score-bar-label { width: 90px; font-size: 10px; }
-  }
+@media(max-width:480px){
+  .hero h2{font-size:24px}
+  .main{padding:24px 16px 50px}
+  .header{padding:14px 16px}
+  .score-bar-label{width:90px;font-size:10px}
+}
 </style>
 </head>
 <body>
@@ -248,18 +276,17 @@
 
 <main class="main">
 
-  <!-- INPUT PHASE -->
   <div class="phase active" id="phase-input">
     <div class="hero">
       <h2>Намери правилния лекар</h2>
-      <p>Описваш симптомите. Агентът планира, търси, оценява и създава твоя медицински план — без твоя намеса.</p>
+      <p>Описваш симптомите. Агентът планира, търси, оценява собствената си работа и се подобрява — без твоя намеса.</p>
       <div class="hero-badges">
         <span class="badge badge-blue">⚡ Автономен план</span>
         <span class="badge badge-cyan">🔍 Реално търсене</span>
-        <span class="badge badge-green">📋 7-дневен план</span>
+        <span class="badge badge-green">🔁 Self-evaluation</span>
+        <span class="badge badge-purple">📈 Auto-refinement</span>
       </div>
     </div>
-
     <div class="field">
       <label>Избери град</label>
       <select id="citySelect">
@@ -274,37 +301,32 @@
         <option>Казанлък</option><option>Кюстендил</option>
       </select>
     </div>
-
     <div class="field">
       <label>Опиши симптомите си</label>
       <textarea id="symptomsInput" placeholder="напр. от три дни имам силно главоболие, виене на свят и ми е трудно да се концентрирам..."></textarea>
     </div>
-
     <button class="btn-primary" id="analyzeBtn" onclick="runAgent()" disabled>
       Стартирай автономния агент →
     </button>
     <p class="disclaimer">MedNav предоставя информация, не медицинска диагноза. При спешност — <strong>112</strong>.</p>
   </div>
 
-  <!-- THINKING PHASE -->
   <div class="phase" id="phase-thinking">
     <div class="thinking-wrap">
       <div class="thinking-icon">⚕</div>
       <h3>Агентът работи автономно...</h3>
-      <p id="thinkingCity">Планиране → Търсене → Оценяване → План</p>
+      <p id="thinkingCity">Цел → План → Търсене → Оценяване → Подобряване → Финален план</p>
     </div>
     <div class="thinking-log" id="thinkingLog">
       <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
   </div>
 
-  <!-- RESULT PHASE -->
   <div class="phase" id="phase-result">
     <div id="resultContent"></div>
     <button class="btn-secondary" onclick="reset()">← Ново търсене</button>
   </div>
 
-  <!-- ERROR PHASE -->
   <div class="phase" id="phase-error">
     <div class="error-wrap">
       <div style="font-size:40px;margin-bottom:16px">⚠️</div>
@@ -332,31 +354,32 @@ function showPhase(name) {
   document.getElementById('backBtn').classList.toggle('visible', name !== 'input');
 }
 
-function addThinkingStep(text, done = false, phase = null) {
+function addThinkingStep(text, done=false, phase=null) {
   const log = document.getElementById('thinkingLog');
   const dots = log.querySelector('.dots');
   if (phase) {
     const ph = document.createElement('div');
-    ph.className = 'step-phase';
-    ph.textContent = phase;
+    ph.className = 'step-phase'; ph.textContent = phase;
     log.insertBefore(ph, dots);
   }
   const step = document.createElement('div');
   step.className = 'thinking-step';
-  step.innerHTML = `<span class="step-icon ${done ? 'done' : 'pending'}">${done ? '✓' : '›'}</span><span class="step-text">${text}</span>`;
+  step.innerHTML = `<span class="step-icon ${done?'done':'pending'}">${done?'✓':'›'}</span><span class="step-text">${text}</span>`;
   log.insertBefore(step, dots);
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
 function copyText(text, msgId) {
-  navigator.clipboard.writeText(text).then(() => {
-    const el = document.getElementById(msgId);
-    if (el) { el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2000); }
+  navigator.clipboard.writeText(text).then(()=>{
+    const el=document.getElementById(msgId);
+    if(el){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000)}
   });
 }
 
-function scoreClass(s) { return s >= 80 ? 'score-high' : s >= 60 ? 'score-mid' : 'score-low'; }
+function scoreClass(s){return s>=80?'score-high':s>=60?'score-mid':'score-low'}
+
+function confidenceColor(s){return s>=80?'#10B981':s>=60?'#F59E0B':'#EF4444'}
 
 async function runAgent() {
   const city = citySelect.value;
@@ -364,307 +387,340 @@ async function runAgent() {
   if (!city || !symptoms) return;
 
   showPhase('thinking');
-  document.getElementById('thinkingCity').textContent = `Планиране → Търсене → Оценяване → План`;
 
-  // Animated loop phases
-  await sleep(300); addThinkingStep('Интерпретирам целта на пациента...', false, 'ФАЗА 1 — ЦЕЛИ');
-  await sleep(600); addThinkingStep('Определям необходимия специалист...');
-  await sleep(600); addThinkingStep('Оценявам спешността на ситуацията...');
-  await sleep(400); addThinkingStep(`Планирам стъпките за навигация в ${city}...`, false, 'ФАЗА 2 — ПЛАН');
-  await sleep(700); addThinkingStep('Изпращам заявка към Google в реално време...');
-  await sleep(500); addThinkingStep('Събирам реални медицински заведения...', false, 'ФАЗА 3 — ИЗПЪЛНЕНИЕ');
-  await sleep(700); addThinkingStep('Оценявам и класирам резултатите...', false, 'ФАЗА 4 — ОЦЕНЯВАНЕ');
-  await sleep(600); addThinkingStep('Генерирам 7-дневен план за грижа...', false, 'ФАЗА 5 — ФИНАЛЕН ПЛАН');
+  await sleep(300);  addThinkingStep('Интерпретирам целта на пациента...', false, 'ФАЗА 1 — ЦЕЛ');
+  await sleep(600);  addThinkingStep('Определям специалист и спешност...');
+  await sleep(600);  addThinkingStep('Изграждам план за навигация...', false, 'ФАЗА 2 — ПЛАН');
+  await sleep(500);  addThinkingStep(`Търся реални заведения в ${city}...`, false, 'ФАЗА 3 — ИЗПЪЛНЕНИЕ');
+  await sleep(800);  addThinkingStep('Оценявам и класирам резултатите по 5 критерия...', false, 'ФАЗА 4 — ОЦЕНЯВАНЕ');
+  await sleep(600);  addThinkingStep('Извършвам self-evaluation на собствената си работа...', false, 'ФАЗА 5 — SELF-EVALUATION');
+  await sleep(700);  addThinkingStep('Решавам дали е необходимо refinement...', false, 'ФАЗА 6 — REFINEMENT');
+  await sleep(500);  addThinkingStep('Генерирам 7-дневен план и пакет за лекаря...', false, 'ФАЗА 7 — ФИНАЛЕН ПЛАН');
 
   try {
     const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ symptoms, city })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({symptoms,city})
     });
-    if (!res.ok) throw new Error('Server error');
+    if(!res.ok) throw new Error('Server error');
     const data = await res.json();
 
-    if (data.thinking) {
-      for (const step of data.thinking) {
+    if(data.thinking){
+      for(const step of data.thinking){
         await sleep(350);
         addThinkingStep(step, true);
       }
     }
     await sleep(500);
-    renderResult(data, city, symptoms);
+    renderResult(data, city);
     showPhase('result');
-  } catch (err) {
-    document.getElementById('errorMsg').textContent = 'Агентът срещна проблем. Провери връзката и опитай отново.';
+  } catch(err) {
+    document.getElementById('errorMsg').textContent='Агентът срещна проблем. Провери връзката и опитай отново.';
     showPhase('error');
   }
 }
 
-function renderResult(data, city, symptoms) {
+function renderResult(data, city) {
   const urgencyMap = {
-    'спешно': { cls: 'urgent', label: '⚠️ СПЕШНО — обади се на 112 или иди в спешното' },
-    'скоро':  { cls: 'soon',   label: 'В рамките на 2-3 дни' },
-    'планово':{ cls: 'plan',   label: ' Планово — запиши час' }
+    'спешно':{cls:'urgent',label:'⚠️ СПЕШНО — обади се на 112 или иди в спешното'},
+    'скоро':{cls:'soon',label:'⏱ В рамките на 2-3 дни'},
+    'планово':{cls:'plan',label:'📅 Планово — запиши час'}
   };
   const urg = urgencyMap[data.urgency] || urgencyMap['планово'];
   const cp = data.care_plan || {};
   const dp = data.doctor_pack || {};
+  const se = data.self_evaluation || {};
+  const rf = data.refinement || {};
+  const dr = data.decision_report || {};
 
   let html = '';
 
-  // ── URGENCY ──
+  // URGENCY
   html += `<div class="urgency-banner ${urg.cls}">
     <span class="urgency-label">${urg.label}</span>
-    <span class="urgency-reason">${data.urgency_reason || ''}</span>
+    <span class="urgency-reason">${data.urgency_reason||''}</span>
   </div>`;
 
-  // ── SPECIALIST + GOAL ──
+  // SPECIALIST
   html += `<div class="specialist-card">
     <div class="specialist-icon">🩺</div>
     <div>
       <div class="specialist-label">Препоръчан специалист</div>
-      <div class="specialist-name">${data.specialist || ''}</div>
-      ${data.understood_goal ? `<div class="goal-text">"${data.understood_goal}"</div>` : ''}
+      <div class="specialist-name">${data.specialist||''}</div>
+      ${data.understood_goal?`<div class="goal-text">"${data.understood_goal}"</div>`:''}
     </div>
   </div>`;
 
-  // ── AUTONOMOUS PLAN ──
-  if (data.plan_steps && data.plan_steps.length) {
-    html += `<div class="section-block">
+  // PLAN STEPS
+  if(data.plan_steps?.length){
+    html+=`<div class="section-block">
       <div class="section-header">
         <div class="section-icon icon-blue">🎯</div>
-        <div><div class="section-title">Автономен план</div><div class="section-sub">Стъпките, които агентът реши да предприеме</div></div>
+        <div><div class="section-title">Автономен план</div><div class="section-sub">Стъпките, които агентът реши самостоятелно</div></div>
       </div>
       <div class="plan-steps">`;
-    data.plan_steps.forEach((step, i) => {
-      html += `<div class="plan-step">
-        <div class="plan-step-num">${i+1}</div>
-        <div class="plan-step-text">${step}</div>
-      </div>`;
-    });
-    html += `</div></div>`;
+    data.plan_steps.forEach((s,i)=>html+=`<div class="plan-step"><div class="plan-step-num">${i+1}</div><div class="plan-step-text">${s}</div></div>`);
+    html+=`</div></div>`;
   }
 
-  // ── AGENT THINKING ──
-  if (data.thinking && data.thinking.length) {
-    html += `<div class="section-block">
+  // THINKING RECAP
+  if(data.thinking?.length){
+    html+=`<div class="section-block">
       <div class="section-header">
         <div class="section-icon icon-cyan">🧠</div>
-        <div><div class="section-title">Анализ на агента</div><div class="section-sub">Как агентът интерпретира симптомите</div></div>
+        <div><div class="section-title">Анализ на агента</div><div class="section-sub">Как интерпретира симптомите</div></div>
       </div>
       <div class="thinking-recap">`;
-    data.thinking.forEach(step => {
-      html += `<div class="recap-step">
-        <span class="step-icon done">✓</span>
-        <span class="step-text">${step}</span>
-      </div>`;
-    });
-    html += `</div></div>`;
+    data.thinking.forEach(s=>html+=`<div class="recap-step"><span class="step-icon done">✓</span><span class="step-text">${s}</span></div>`);
+    html+=`</div></div>`;
   }
 
-  // ── RANKED CLINICS ──
-  if (data.recommendations && data.recommendations.length) {
-    html += `<div class="section-block">
+  // RANKED CLINICS
+  if(data.recommendations?.length){
+    html+=`<div class="section-block">
       <div class="section-header">
         <div class="section-icon icon-blue">🏥</div>
-        <div><div class="section-title">Класирани заведения в ${city}</div><div class="section-sub">Оценени по 5 критерия от агента</div></div>
+        <div><div class="section-title">Класирани заведения в ${city}</div><div class="section-sub">Оценени по 5 критерия — score от 0 до 100</div></div>
       </div>`;
+    data.recommendations.forEach((rec,i)=>{
+      const sc=rec.score||0;
+      const sb=rec.score_breakdown||{};
+      const mapsUrl=`https://www.google.com/maps/search/${encodeURIComponent(rec.maps_query||rec.name+' '+city)}`;
+      const copyAddrId=`copy-addr-${i}`;
+      const barLabels={specialist_match:'Специалист',urgency_fit:'Спешност',contact_info:'Контакти',location:'Локация',accessibility:'Достъп'};
 
-    data.recommendations.forEach((rec, i) => {
-      const score = rec.score || 0;
-      const sb = rec.score_breakdown || {};
-      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(rec.maps_query || rec.name + ' ' + city)}`;
-      const copyAddrId = `copy-addr-${i}`;
-
-      html += `<div class="clinic-card">
+      html+=`<div class="clinic-card">
         <div class="clinic-header">
           <div style="flex:1">
             <div class="clinic-name">${rec.name}</div>
             <div class="clinic-tags">
               <span class="tag tag-type">${rec.type}</span>
-              ${rec.nhif ? '<span class="tag tag-nhif">НЗОК</span>' : ''}
-              <span style="font-size:11px;color:var(--muted)">#${i+1} в класацията</span>
+              ${rec.nhif?'<span class="tag tag-nhif">НЗОК</span>':''}
+              <span style="font-size:11px;color:var(--muted)">#${i+1}</span>
             </div>
           </div>
           <div class="score-badge">
-            <div class="score-num ${scoreClass(score)}">${score}</div>
+            <div class="score-num ${scoreClass(sc)}">${sc}</div>
             <div class="score-label">SCORE</div>
           </div>
         </div>`;
 
-      // Score bars
-      if (Object.keys(sb).length) {
-        const barLabels = { specialist_match: 'Специалист', urgency_fit: 'Спешност', contact_info: 'Контакти', location: 'Локация', accessibility: 'Достъп' };
-        html += `<div class="score-bars">`;
-        Object.entries(sb).forEach(([k, v]) => {
-          const pct = Math.round((v / 20) * 100);
-          html += `<div class="score-bar-row">
-            <span class="score-bar-label">${barLabels[k] || k}</span>
+      if(Object.keys(sb).length){
+        html+=`<div class="score-bars">`;
+        Object.entries(sb).forEach(([k,v])=>{
+          const pct=Math.round((v/20)*100);
+          html+=`<div class="score-bar-row">
+            <span class="score-bar-label">${barLabels[k]||k}</span>
             <div class="score-bar-track"><div class="score-bar-fill" style="width:${pct}%"></div></div>
             <span class="score-bar-val">${v}/20</span>
           </div>`;
         });
-        html += `</div>`;
+        html+=`</div>`;
       }
 
-      if (rec.address) html += `<div class="clinic-detail"><span>📍</span><span>${rec.address}</span></div>`;
-      if (rec.phone)   html += `<div class="clinic-detail"><span>📞</span><a href="tel:${rec.phone}">${rec.phone}</a></div>`;
-
-      html += `<div class="clinic-why">${rec.why}</div>`;
-      html += `<div class="clinic-actions">
+      if(rec.address) html+=`<div class="clinic-detail"><span>📍</span><span>${rec.address}</span></div>`;
+      if(rec.phone)   html+=`<div class="clinic-detail"><span>📞</span><a href="tel:${rec.phone}">${rec.phone}</a></div>`;
+      html+=`<div class="clinic-why">${rec.why}</div>`;
+      html+=`<div class="clinic-actions">
         <a class="btn-action btn-maps" href="${mapsUrl}" target="_blank" rel="noopener">🗺 Отвори в Maps</a>`;
-      if (rec.url && rec.url !== '#') html += `<a class="btn-action btn-website" href="${rec.url}" target="_blank" rel="noopener">🌐 Уебсайт</a>`;
-      if (rec.address) html += `<button class="btn-action btn-copy" onclick="copyText('${rec.address.replace(/'/g,"\\'")}','${copyAddrId}')">📋 Копирай адрес<span class="copied-msg" id="${copyAddrId}"> ✓</span></button>`;
-      html += `</div></div>`;
+      if(rec.url&&rec.url!=='#') html+=`<a class="btn-action btn-website" href="${rec.url}" target="_blank" rel="noopener">🌐 Уебсайт</a>`;
+      if(rec.address) html+=`<button class="btn-action btn-copy" onclick="copyText('${rec.address.replace(/'/g,"\\'")}','${copyAddrId}')">📋 Адрес<span class="copied-msg" id="${copyAddrId}"> ✓</span></button>`;
+      html+=`</div></div>`;
     });
 
-    // Ranking reasoning
-    if (data.ranking_reasoning) {
-      html += `<div class="ranking-box"><p>💡 ${data.ranking_reasoning}</p></div>`;
-    }
-    html += `</div>`;
+    if(data.ranking_reasoning) html+=`<div class="ranking-box"><p>💡 ${data.ranking_reasoning}</p></div>`;
+    html+=`</div>`;
   }
 
-  html += `<div class="divider"></div>`;
+  html+=`<div class="divider"></div>`;
 
-  // ── 7-DAY CARE PLAN ──
-  html += `<div class="section-block">
+  // SELF-EVALUATION
+  html+=`<div class="section-block">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🔍</div>
+      <div><div class="section-title">Self-Evaluation</div><div class="section-sub">Агентът оценява собствената си работа</div></div>
+    </div>
+    <div class="self-eval-box">
+      <div class="self-eval-top">`;
+
+  const conf=se.confidence_score||0;
+  const confColor=confidenceColor(conf);
+  const r=32, cx=36, cy=36, circumference=2*Math.PI*r;
+  const dashOffset=circumference*(1-conf/100);
+  html+=`<div class="confidence-circle">
+    <svg width="72" height="72" viewBox="0 0 72 72">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${confColor}" stroke-width="6"
+        stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+        stroke-linecap="round"/>
+    </svg>
+    <div class="val" style="color:${confColor}">${conf}%</div>
+  </div>`;
+
+  const riskClass={'low':'risk-low','medium':'risk-medium','high':'risk-high'}[se.risk_level]||'risk-medium';
+  const riskLabel={'low':'🟢 Нисък риск','medium':'🟡 Среден риск','high':'🔴 Висок риск'}[se.risk_level]||'—';
+
+  html+=`<div class="confidence-info">
+    <span class="risk-pill ${riskClass}">${riskLabel}</span>
+    ${se.why_confidence_is_not_100?`<div class="why-not-100">"${se.why_confidence_is_not_100}"</div>`:''}
+  </div></div>`;
+
+  html+=`<div class="eval-lists">`;
+  if(se.missing_information?.length){
+    html+=`<div class="eval-list-block">
+      <div class="eval-list-title amber">⚠️ Липсваща информация</div>`;
+    se.missing_information.forEach(m=>html+=`<div class="eval-list-item"><span>›</span><span>${m}</span></div>`);
+    html+=`</div>`;
+  }
+  if(se.limitations?.length){
+    html+=`<div class="eval-list-block">
+      <div class="eval-list-title red">⚡ Ограничения</div>`;
+    se.limitations.forEach(l=>html+=`<div class="eval-list-item"><span>›</span><span>${l}</span></div>`);
+    html+=`</div>`;
+  }
+  html+=`</div></div></div>`;
+
+  // REFINEMENT
+  html+=`<div class="section-block">
+    <div class="section-header">
+      <div class="section-icon icon-green">🔁</div>
+      <div><div class="section-title">Autonomous Refinement</div><div class="section-sub">Агентът решава дали да подобри търсенето</div></div>
+    </div>
+    <div class="refinement-box ${rf.performed?'performed':'skipped'}">
+      <div class="refinement-top">
+        <div class="refinement-label">${rf.performed?'✅ Refinement извършен':'⏭ Refinement не беше нужен'}</div>
+        <div class="score-flow">
+          <span class="score-pill before">${rf.initial_average_score||0}</span>
+          <span style="color:var(--muted)">→</span>
+          <span class="score-pill after">${rf.final_average_score||0}</span>
+          ${rf.performed?`<span class="improvement-badge">${rf.improvement||''}</span>`:''}
+        </div>
+      </div>
+      ${rf.reason?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px">${rf.reason}</div>`:''}
+      ${rf.decision_made?`<div class="refinement-decision">🤖 ${rf.decision_made}</div>`:''}
+    </div>
+  </div>`;
+
+  html+=`<div class="divider"></div>`;
+
+  // DECISION REPORT
+  html+=`<div class="section-block">
+    <div class="section-header">
+      <div class="section-icon icon-purple">📊</div>
+      <div><div class="section-title">Автономен доклад за решенията</div><div class="section-sub">Прозрачност — какво реши агентът и защо</div></div>
+    </div>
+    <div class="decision-report">`;
+
+  if(dr.detected_goal) html+=`<div class="decision-item"><div class="decision-label">Разпозната цел</div><div class="decision-text">${dr.detected_goal}</div></div>`;
+
+  if(dr.key_decisions?.length){
+    html+=`<div class="decision-item"><div class="decision-label">Ключови решения на агента</div><div class="pack-list">`;
+    dr.key_decisions.forEach((d,i)=>html+=`<div class="decision-list-item"><span style="color:var(--blue);font-weight:700">${i+1}.</span><span>${d}</span></div>`);
+    html+=`</div></div>`;
+  }
+
+  if(dr.alternatives_rejected) html+=`<div class="decision-item"><div class="decision-label">Отхвърлени алтернативи</div><div class="decision-text">${dr.alternatives_rejected}</div></div>`;
+  if(dr.final_selection_reason) html+=`<div class="decision-item"><div class="decision-label">Защо е избран #1</div><div class="decision-text">${dr.final_selection_reason}</div></div>`;
+  if(dr.agent_confidence_statement) html+=`<div class="decision-item"><div class="decision-label">Самооценка на агента</div><div class="decision-text" style="font-style:italic">"${dr.agent_confidence_statement}"</div></div>`;
+
+  html+=`</div></div><div class="divider"></div>`;
+
+  // 7-DAY CARE PLAN
+  html+=`<div class="section-block">
     <div class="section-header">
       <div class="section-icon icon-green">📅</div>
       <div><div class="section-title">7-дневен план за грижа</div><div class="section-sub">Стъпка по стъпка — какво да правиш</div></div>
     </div>
     <div class="care-timeline">`;
+  if(cp.today)    html+=`<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-today">Днес</span></div><div class="care-day-text">${cp.today}</div></div>`;
+  if(cp.tomorrow) html+=`<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-tomorrow">Утре</span></div><div class="care-day-text">${cp.tomorrow}</div></div>`;
+  if(cp.days_3_4) html+=`<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-days34">Дни 3–4</span></div><div class="care-day-text">${cp.days_3_4}</div></div>`;
+  if(cp.days_5_7) html+=`<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-days57">Дни 5–7</span></div><div class="care-day-text">${cp.days_5_7}</div></div>`;
+  html+=`</div>`;
 
-  if (cp.today)    html += `<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-today">Днес</span></div><div class="care-day-text">${cp.today}</div></div>`;
-  if (cp.tomorrow) html += `<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-tomorrow">Утре</span></div><div class="care-day-text">${cp.tomorrow}</div></div>`;
-  if (cp.days_3_4) html += `<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-days34">Дни 3-4</span></div><div class="care-day-text">${cp.days_3_4}</div></div>`;
-  if (cp.days_5_7) html += `<div class="care-day"><div class="care-day-label"><span class="care-day-tag tag-days57">Дни 5-7</span></div><div class="care-day-text">${cp.days_5_7}</div></div>`;
-
-  html += `</div>`;
-
-  if (cp.monitor && cp.monitor.length) {
-    html += `<div style="margin-top:16px"><div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">⚠️ Следи за</div><div class="monitor-list">`;
-    cp.monitor.forEach(m => html += `<div class="monitor-item"><div class="monitor-dot"></div><span>${m}</span></div>`);
-    html += `</div></div>`;
+  if(cp.monitor?.length){
+    html+=`<div style="margin-top:16px"><div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">⚠️ Следи за</div><div class="monitor-list">`;
+    cp.monitor.forEach(m=>html+=`<div class="monitor-item"><div class="monitor-dot"></div><span>${m}</span></div>`);
+    html+=`</div></div>`;
   }
-
-  if (cp.escalate_if && cp.escalate_if.length) {
-    html += `<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">🚨 Обади се на 112 ако</div><div class="escalate-list">`;
-    cp.escalate_if.forEach(e => html += `<div class="escalate-item"><div class="escalate-dot"></div><span>${e}</span></div>`);
-    html += `</div></div>`;
+  if(cp.escalate_if?.length){
+    html+=`<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">🚨 Обади се на 112 ако</div><div class="escalate-list">`;
+    cp.escalate_if.forEach(e=>html+=`<div class="escalate-item"><div class="escalate-dot"></div><span>${e}</span></div>`);
+    html+=`</div></div>`;
   }
-  html += `</div><div class="divider"></div>`;
+  html+=`</div><div class="divider"></div>`;
 
-  // ── DOCTOR PACK ──
-  html += `<div class="section-block">
+  // DOCTOR PACK
+  html+=`<div class="section-block">
     <div class="section-header">
       <div class="section-icon icon-amber">📋</div>
-      <div><div class="section-title">Пакет за лекаря</div><div class="section-sub">Готов за използване при записване и посещение</div></div>
+      <div><div class="section-title">Пакет за лекаря</div><div class="section-sub">Готов за директно използване</div></div>
     </div>
     <div class="doctor-pack-grid">`;
 
-  if (dp.call_script) {
-    html += `<div class="pack-item">
-      <div class="pack-label">📞 Скрипт при обаждане</div>
-      <div class="script-box" id="call-script">${dp.call_script}</div>
-      <button class="btn-copy-script" onclick="copyText(document.getElementById('call-script').innerText,'copy-call')">📋 Копирай<span class="copied-msg" id="copy-call"> ✓</span></button>
-    </div>`;
+  if(dp.call_script) html+=`<div class="pack-item">
+    <div class="pack-label">📞 Скрипт при обаждане</div>
+    <div class="script-box" id="call-script">${dp.call_script}</div>
+    <button class="btn-copy-script" onclick="copyText(document.getElementById('call-script').innerText,'copy-call')">📋 Копирай<span class="copied-msg" id="copy-call"> ✓</span></button>
+  </div>`;
+
+  if(dp.symptoms_summary) html+=`<div class="pack-item">
+    <div class="pack-label">📝 Резюме за лекаря</div>
+    <div class="pack-text">${dp.symptoms_summary}</div>
+  </div>`;
+
+  if(dp.questions?.length){
+    html+=`<div class="pack-item"><div class="pack-label">❓ Въпроси за лекаря</div><div class="pack-list">`;
+    dp.questions.forEach(q=>html+=`<div class="pack-list-item"><span class="pack-list-bullet">›</span><span>${q}</span></div>`);
+    html+=`</div></div>`;
   }
 
-  if (dp.symptoms_summary) {
-    html += `<div class="pack-item">
-      <div class="pack-label">📝 Резюме на симптомите за лекаря</div>
-      <div class="pack-text">${dp.symptoms_summary}</div>
-    </div>`;
+  if(dp.documents_to_bring?.length){
+    html+=`<div class="pack-item"><div class="pack-label">📁 Какво да носиш</div><div class="pack-list">`;
+    dp.documents_to_bring.forEach(d=>html+=`<div class="pack-list-item"><span class="pack-list-bullet">✓</span><span>${d}</span></div>`);
+    html+=`</div></div>`;
   }
 
-  if (dp.questions && dp.questions.length) {
-    html += `<div class="pack-item">
-      <div class="pack-label">❓ Въпроси за лекаря</div>
-      <div class="pack-list">`;
-    dp.questions.forEach(q => html += `<div class="pack-list-item"><span class="pack-list-bullet">›</span><span>${q}</span></div>`);
-    html += `</div></div>`;
-  }
+  if(dp.appointment_script) html+=`<div class="pack-item">
+    <div class="pack-label">🗣 Скрипт за посещението</div>
+    <div class="script-box" id="appt-script">${dp.appointment_script}</div>
+    <button class="btn-copy-script" onclick="copyText(document.getElementById('appt-script').innerText,'copy-appt')">📋 Копирай<span class="copied-msg" id="copy-appt"> ✓</span></button>
+  </div>`;
 
-  if (dp.documents_to_bring && dp.documents_to_bring.length) {
-    html += `<div class="pack-item">
-      <div class="pack-label">📁 Какво да носиш</div>
-      <div class="pack-list">`;
-    dp.documents_to_bring.forEach(d => html += `<div class="pack-list-item"><span class="pack-list-bullet">✓</span><span>${d}</span></div>`);
-    html += `</div></div>`;
-  }
+  html+=`</div></div><div class="divider"></div>`;
 
-  if (dp.appointment_script) {
-    html += `<div class="pack-item">
-      <div class="pack-label">🗣 Скрипт за начало на посещението</div>
-      <div class="script-box" id="appt-script">${dp.appointment_script}</div>
-      <button class="btn-copy-script" onclick="copyText(document.getElementById('appt-script').innerText,'copy-appt')">📋 Копирай<span class="copied-msg" id="copy-appt"> ✓</span></button>
-    </div>`;
-  }
-
-  html += `</div></div><div class="divider"></div>`;
-
-  // ── RED FLAGS ──
-  if (data.red_flags && data.red_flags.length) {
-    html += `<div class="red-flags-box">
+  // RED FLAGS
+  if(data.red_flags?.length){
+    html+=`<div class="red-flags-box">
       <div class="red-flags-title"> Червени флагове — иди в спешното веднага ако:</div>`;
-    data.red_flags.forEach(f => html += `<div class="red-flag-item"><span>⚡</span><span>${f}</span></div>`);
-    html += `</div>`;
+    data.red_flags.forEach(f=>html+=`<div class="red-flag-item"><span>⚡</span><span>${f}</span></div>`);
+    html+=`</div>`;
   }
 
-  // ── WHY AUTONOMOUS ──
-  html += `<div class="autonomy-box">
+  // WHY AUTONOMOUS
+  html+=`<div class="autonomy-box">
     <div class="autonomy-title">⚡ Защо това е автономен агент</div>
     <div class="autonomy-items">
-      <div class="autonomy-item">
-        <div class="autonomy-check">✓</div>
-        <div class="autonomy-text">
-          <strong>Интерпретира целта</strong>
-          <span>Агентът разбира какво пациентът наистина се нуждае — не просто четe думите</span>
-        </div>
-      </div>
-      <div class="autonomy-item">
-        <div class="autonomy-check">✓</div>
-        <div class="autonomy-text">
-          <strong>Планира сам стъпките</strong>
-          <span>Решава кой специалист, каква спешност, каква последователност от действия</span>
-        </div>
-      </div>
-      <div class="autonomy-item">
-        <div class="autonomy-check">✓</div>
-        <div class="autonomy-text">
-          <strong>Търси в реално време</strong>
-          <span>Прави live заявка към Google — не разчита на стара база данни</span>
-        </div>
-      </div>
-      <div class="autonomy-item">
-        <div class="autonomy-check">✓</div>
-        <div class="autonomy-text">
-          <strong>Оценява и класира</strong>
-          <span>Дава score на всяко заведение по 5 критерия и обяснява решението</span>
-        </div>
-      </div>
-      <div class="autonomy-item">
-        <div class="autonomy-check">✓</div>
-        <div class="autonomy-text">
-          <strong>Създава персонален план</strong>
-          <span>7-дневен план за грижа + пакет за лекаря — готови за директно използване</span>
-        </div>
-      </div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Интерпретира целта</strong><span>Разбира какво пациентът реално се нуждае от симптомите</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Планира самостоятелно</strong><span>Решава специалист, спешност и последователност без input от потребителя</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Търси в реално време</strong><span>Live заявка към Google — не разчита на стара или статична база данни</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Оценява и класира</strong><span>Score по 5 критерия с breakdownза всяко заведение</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Self-evaluation</strong><span>Критично оценява собствената си работа — confidence score, риск, липсваща информация</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Autonomous refinement</strong><span>Ако резултатите не са достатъчни, автоматично генерира по-добра заявка и сравнява двата набора</span></div></div>
+      <div class="autonomy-item"><div class="autonomy-check">✓</div><div class="autonomy-text"><strong>Прозрачен доклад</strong><span>Обяснява всяко решение — какво е избрал, какво е отхвърлил и защо</span></div></div>
     </div>
   </div>`;
 
-  html += `<p style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:20px">
-    MedNav предоставя информация, не медицинска диагноза. При спешност — 112.
-  </p>`;
+  html+=`<p style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:20px">MedNav предоставя информация, не медицинска диагноза. При спешност — 112.</p>`;
 
   document.getElementById('resultContent').innerHTML = html;
 }
 
 function reset() {
   showPhase('input');
-  document.getElementById('thinkingLog').innerHTML = `<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  document.getElementById('resultContent').innerHTML = '';
+  document.getElementById('thinkingLog').innerHTML='<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  document.getElementById('resultContent').innerHTML='';
 }
 </script>
 </body>
