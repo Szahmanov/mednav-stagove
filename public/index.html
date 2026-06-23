@@ -403,8 +403,8 @@ async function runAgent() {
 function renderResult(data, city, symptoms) {
   const urgencyMap = {
     'спешно': { cls: 'urgent', label: '⚠️ СПЕШНО — обади се на 112 или иди в спешното' },
-    'скоро':  { cls: 'soon',   label: '⏱ В рамките на 2-3 дни' },
-    'планово':{ cls: 'plan',   label: '📅 Планово — запиши час' }
+    'скоро':  { cls: 'soon',   label: 'В рамките на 2-3 дни' },
+    'планово':{ cls: 'plan',   label: ' Планово — запиши час' }
   };
   const urg = urgencyMap[data.urgency] || urgencyMap['планово'];
   const cp = data.care_plan || {};
@@ -607,7 +607,7 @@ function renderResult(data, city, symptoms) {
   // ── RED FLAGS ──
   if (data.red_flags && data.red_flags.length) {
     html += `<div class="red-flags-box">
-      <div class="red-flags-title">🚨 Червени флагове — иди в спешното веднага ако:</div>`;
+      <div class="red-flags-title"> Червени флагове — иди в спешното веднага ако:</div>`;
     data.red_flags.forEach(f => html += `<div class="red-flag-item"><span>⚡</span><span>${f}</span></div>`);
     html += `</div>`;
   }
